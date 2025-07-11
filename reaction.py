@@ -1,11 +1,10 @@
 import pyautogui
-import pyscreeze
+import pyscreeze #this import is needed for pyautogui even tho its not used
 import time
 
 
-screen_width, screen_height = pyautogui.size()
-
+#def reaction_time_module():
 while True:
     if(pyautogui.pixelMatchesColor(300, 300,(75,219,106), tolerance=10)== True):
         pyautogui.click(x=300,y=300)
-    
+        time.sleep(0.5)
