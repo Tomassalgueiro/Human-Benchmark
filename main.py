@@ -12,7 +12,7 @@ customtkinter.set_default_color_theme("blue")
 
 #app settings
 app = customtkinter.CTk()
-app.geometry("720x480")
+app.geometry("470x380")
 app.title("Super Human Reaction")
 app.resizable(False,False)
 app.attributes("-topmost", True)
@@ -23,6 +23,7 @@ error_text = None
 running = False
 
 def reaction_module(R,G,B,posx,posy):
+    isrunning_label.configure(text="Script is now Active")
     while running:
         if(pyautogui.pixelMatchesColor(posx, posy,(R,G,B), tolerance=10)== True):
             pyautogui.click(x=posx,y=posy)
@@ -106,24 +107,31 @@ def disable_elements():
                     pass
 
 
-
 def start_reaction_module():
     global running
     if not running:
-        running = True
+        running = True        
         posx,posy = int(pixel_x_entry.get()),int(pixel_y_entry.get()) 
         if color_picker == 1:
-
             print("Starting on RGB mode")
             R,G,B = int(red_rgb_entry.get()), int(green_rgb_entry.get()), int(blue_rgb_entry.get())
             threading.Thread(target=reaction_module,args=(R,G,B,posx,posy),daemon=True).start()
         
         elif color_picker == 2:
-            print("Ainda n fiz")
+            # hex is basically FF FF FF, pairs of two letters on which each represents r g and b.
+            print("Starting on HEX mode")
+            hex_color = hex_entry.get()
+            rgb = []
+            for i in range(0,6,2):
+                rgb.append(int(hex_color[i]+hex_color[i+1],16))
+            print(rgb)
+            threading.Thread(target=reaction_module, args=(rgb[0],rgb[1],rgb[2],posx,posy),daemon=True).start()
+
 
 def stop_reaction_module():
     global running
     running = False
+    isrunning_label.configure(text="Script Stopped")
     print("stopped")
 
 
@@ -132,7 +140,7 @@ radio_var_color = tkinter.StringVar(value="Nothing Selected")
 
 #RBG Colors inserter
 frame_rgb = customtkinter.CTkFrame(app, fg_color="#242424", border_width=1, border_color="#D4D4D4")
-frame_rgb.pack(padx=10,pady=(30,10),anchor="w")
+frame_rgb.pack(padx=10,pady=(30,10),anchor="center")
 
 radio_color_RGB = customtkinter.CTkRadioButton(frame_rgb, text="RBG",command=radiobutton_event, variable=radio_var_color, value="RGB")
 radio_color_RGB.pack(padx=10,pady=10,side="left")
@@ -157,7 +165,7 @@ blue_rgb_entry._entry.configure(validate="focusout", validatecommand=(vrgb, "%P"
 
 #hex colors inserter
 frame_hex = customtkinter.CTkFrame(app, fg_color="#242424", border_width=1, border_color="#D4D4D4")
-frame_hex.pack(padx=10,pady=(1,10),anchor="w")
+frame_hex.pack(padx=10,pady=(1,10),anchor="center")
 
 
 radio_color_HEX = customtkinter.CTkRadioButton(frame_hex, text="Hex Code",command=radiobutton_event, variable= radio_var_color, value="HEX")
@@ -171,7 +179,7 @@ hex_entry._entry.configure(validate="focusout", validatecommand=(vhex, "%P"))
 
 #pixel selection, either manual (insert x and y) or automatic (press button select pixel and it gets the pos automatically)
 frame_manual_pixel_insertiion = customtkinter.CTkFrame(app, fg_color="#242424", border_width=1, border_color="#D4D4D4")
-frame_manual_pixel_insertiion.pack(padx=10, pady=10, anchor="w")
+frame_manual_pixel_insertiion.pack(padx=10, pady=10, anchor="center")
 
 pixel_x_text = customtkinter.CTkLabel(frame_manual_pixel_insertiion, text="X")
 pixel_x_text.pack(side="left",padx=(5,0))
@@ -184,14 +192,19 @@ pixel_y_entry = customtkinter.CTkEntry(frame_manual_pixel_insertiion, placeholde
 pixel_y_entry.pack(side="left", padx=5, pady=5)
 
 
+
 #frame for start and stop
-frame_start_stop = customtkinter.CTkFrame(app,fg_color="#242424", border_width=1, border_color="#D4D4D4")
-frame_start_stop.pack(pady=10, anchor="s")
+frame_start_stop = customtkinter.CTkFrame(app,fg_color="#242424")
+frame_start_stop.pack(pady=10, side="bottom")
 
 start_button = customtkinter.CTkButton(frame_start_stop, text="START",text_color="#FFFFFF",fg_color="#00DD00",hover_color="#005500",command=start_reaction_module)
 start_button.pack(side="left",padx=5,pady=5)
 stop_button = customtkinter.CTkButton(frame_start_stop, text="STOP",text_color="#FFFFFF",fg_color="#DD0000",hover_color="#550000",command=stop_reaction_module)
 stop_button.pack(side="left",padx=5,pady=5)
+
+isrunning_label = customtkinter.CTkLabel(app, text="Script Stopped")
+isrunning_label.pack(anchor="center", side="bottom")
+
 
 # Run app Loop
 disable_elements()
