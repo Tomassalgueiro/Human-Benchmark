@@ -7,7 +7,7 @@ import pyscreeze #this import is needed for pyautogui even tho its not used
 import time
 
 # System settings
-customtkinter.set_appearance_mode("System")
+customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("blue")
 
 #app settings
